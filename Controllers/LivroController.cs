@@ -18,21 +18,26 @@ namespace Biblioteca.Controllers
         [HttpPost]
         public IActionResult Cadastro(Livro l)
         {
-            LivroService livroService = new LivroService();
+            if(string.IsNullOrEmpty(l.Titulo) && !string.IsNullOrEmpty(l.Autor) && l.Ano!=0){
+                LivroService livroService = new LivroService();
 
-            if(l.Id == 0)
-            {
-                livroService.Inserir(l);
-            }
-            else
-            {
-                livroService.Atualizar(l);
-            }
+                if(l.Id == 0)
+                {
+                    livroService.Inserir(l);
+                }
+                else
+                {
+                    livroService.Atualizar(l);
+                }
 
-            return RedirectToAction("Listagem");
+                return RedirectToAction("Listagem");
+            }else{
+                ViewData["mensagem"]= "Preencha todos os campos";
+                return View();
+            }    
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro)
+        public IActionResult Listagem(string tipoFiltro, string filtro, string itensPorPagina, int numDaPagina, int PaginaAtual)
         {
             Autenticacao.CheckLogin(this);
             FiltrosLivros objFiltro = null;
@@ -42,6 +47,11 @@ namespace Biblioteca.Controllers
                 objFiltro.Filtro = filtro;
                 objFiltro.TipoFiltro = tipoFiltro;
             }
+
+            ViewData["livrosPorPagina"] =  (string.IsNullOrEmpty(itensPorPagina) ? 10 : Int32.Parse(itensPorPagina));
+            ViewData["PaginaAtual"] = (PaginaAtual!=0 ? PaginaAtual : 1);
+
+
             LivroService livroService = new LivroService();
             return View(livroService.ListarTodos(objFiltro));
         }
@@ -54,13 +64,6 @@ namespace Biblioteca.Controllers
             return View(l);
         }
 
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            if(string.IsNullOrEmpty(HttpContext.Session.GetString("user")))
-            {
-                filterContext.HttpContext.Response.Redirect("/Home/Login");
-            }
-        }
 
     }
 }
