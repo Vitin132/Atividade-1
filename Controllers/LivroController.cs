@@ -18,7 +18,7 @@ namespace Biblioteca.Controllers
         [HttpPost]
         public IActionResult Cadastro(Livro l)
         {
-            if(string.IsNullOrEmpty(l.Titulo) && !string.IsNullOrEmpty(l.Autor) && l.Ano!=0){
+            if(!string.IsNullOrEmpty(l.Titulo) && !string.IsNullOrEmpty(l.Autor) && l.Ano!=0){
                 LivroService livroService = new LivroService();
 
                 if(l.Id == 0)
@@ -37,7 +37,7 @@ namespace Biblioteca.Controllers
             }    
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro, string itensPorPagina, int numDaPagina, int PaginaAtual)
+        public IActionResult Listagem(string tipoFiltro, string filtro, string itensPorPagina, int NumDaPagina, int PaginaAtual)
         {
             Autenticacao.CheckLogin(this);
             FiltrosLivros objFiltro = null;
